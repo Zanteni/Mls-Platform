@@ -1,0 +1,43 @@
+# Python virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment / secrets
+.env
+.env.*
+
+# Generated grading outputs
+results/
+reports/
+analytics_outputs/
+dummy_results/
+
+# Temporary student files
+temp_student/
+tempstudent/
+temp/
+tmp/
+
+# Python tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log

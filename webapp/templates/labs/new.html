@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    Create New Lab
+{% endblock %}
+
+
+{% block content %}
+
+<header class="header">
+
+    <div class="page-header">
+
+        <div>
+
+            <p class="muted">
+                Teacher Lab Management
+            </p>
+
+            <h1>
+                Create New Lab
+            </h1>
+
+            <p class="subtitle">
+                Create a new laboratory for your students.
+            </p>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+{% with messages = get_flashed_messages(
+    with_categories=true
+) %}
+
+    {% if messages %}
+
+        {% for category, message in messages %}
+
+            <div
+                class="
+                    alert
+                    {% if category == 'success' %}
+                        alert-success
+                    {% elif category == 'warning' %}
+                        alert-warning
+                    {% else %}
+                        alert-info
+                    {% endif %}
+                "
+            >
+
+                <strong>
+                    {{ message }}
+                </strong>
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+{% endwith %}
+
+
+<form
+    method="POST"
+    action="{{ url_for('create_lab') }}"
+>
+
+
+    <!-- ================================================= -->
+    <!-- BASIC INFORMATION -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Basic Information
+                </h2>
+
+                <p class="subtitle">
+                    Define the identity of the laboratory.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="name">
+                Lab Name
+            </label>
+
+            <input
+                type="text"
+                id="name"
+                name="name"
+                maxlength="150"
+                placeholder="Lab 1 — Data Preprocessing"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="description">
+                Description
+            </label>
+
+            <textarea
+                id="description"
+                name="description"
+                rows="6"
+                placeholder="Describe what students will learn..."
+            ></textarea>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- ASSIGNMENT -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Assignment
+                </h2>
+
+                <p class="subtitle">
+                    Connect the laboratory assignment.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="github_url">
+                GitHub Repository URL
+            </label>
+
+            <input
+                type="url"
+                id="github_url"
+                name="github_url"
+                placeholder="https://github.com/MLs-labs/lab-1.git"
+                required
+            >
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- ORGANIZATION -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Organization
+                </h2>
+
+                <p class="subtitle">
+                    Control how the laboratory appears.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="category">
+                Category
+            </label>
+
+            <input
+                type="text"
+                id="category"
+                name="category"
+                maxlength="100"
+                placeholder="Machine Learning"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="display_order">
+                Display Order
+            </label>
+
+            <input
+                type="number"
+                id="display_order"
+                name="display_order"
+                value="0"
+                min="0"
+                step="1"
+            >
+
+            <p class="muted">
+                Lower numbers appear first.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- LEARNING CONTENT -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Learning Content
+                </h2>
+
+                <p class="subtitle">
+                    Optional material students can access later.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="solution_url">
+                Solution URL
+            </label>
+
+            <input
+                type="url"
+                id="solution_url"
+                name="solution_url"
+                placeholder="https://..."
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="video_url">
+                Explanation Video URL
+            </label>
+
+            <input
+                type="url"
+                id="video_url"
+                name="video_url"
+                placeholder="https://youtube.com/..."
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="teacher_notes">
+                Teacher Notes
+            </label>
+
+            <textarea
+                id="teacher_notes"
+                name="teacher_notes"
+                rows="8"
+                placeholder="Explain common mistakes, weaknesses, or important concepts..."
+            ></textarea>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- ACTIONS -->
+    <!-- ================================================= -->
+
+    <div class="button-group">
+
+        <button
+            type="submit"
+            class="button button-primary"
+        >
+            Create Lab
+        </button>
+
+
+        <a
+            class="button button-secondary"
+            href="{{ url_for('teacher_dashboard') }}"
+        >
+            Cancel
+        </a>
+
+    </div>
+
+</form>
+
+{% endblock %}

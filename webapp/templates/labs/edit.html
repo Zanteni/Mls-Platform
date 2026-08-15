@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Edit {{ lab.name }}
+{% endblock %}
+
+
+{% block content %}
+
+<header class="header">
+
+    <div class="page-header">
+
+        <div>
+
+            <p class="muted">
+                Teacher Lab Management
+            </p>
+
+            <h1>
+                Edit Lab
+            </h1>
+
+            <p class="subtitle">
+                {{ lab.name }}
+            </p>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+{% with messages = get_flashed_messages(
+with_categories=true
+) %}
+
+{% if messages %}
+
+{% for category, message in messages %}
+
+<div class="
+                    alert
+                    {% if category == 'success' %}
+                        alert-success
+                    {% elif category == 'warning' %}
+                        alert-warning
+                    {% else %}
+                        alert-info
+                    {% endif %}
+                ">
+
+    <strong>
+        {{ message }}
+    </strong>
+
+</div>
+
+{% endfor %}
+
+{% endif %}
+
+{% endwith %}
+
+
+<form method="POST" action="{{ url_for(
+        'edit_lab',
+        lab_id=lab.id
+    ) }}">
+
+
+    <!-- ================================================= -->
+    <!-- BASIC INFORMATION -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Basic Information
+                </h2>
+
+                <p class="subtitle">
+                    Identity and description of the laboratory.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="name">
+                Lab Name
+            </label>
+
+            <input type="text" id="name" name="name" value="{{ lab.name }}" maxlength="150" required>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="description">
+                Description
+            </label>
+
+            <textarea id="description" name="description" rows="6"
+                placeholder="Describe the laboratory...">{{ lab.description or "" }}</textarea>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- ASSIGNMENT -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Assignment
+                </h2>
+
+                <p class="subtitle">
+                    Official GitHub repository for the laboratory.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="github_url">
+                GitHub Repository URL
+            </label>
+
+            <input type="url" id="github_url" name="github_url" value="{{ lab.github_url }}"
+                placeholder="https://github.com/organization/repository" required>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- ORGANIZATION -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Organization
+                </h2>
+
+                <p class="subtitle">
+                    Control how this lab appears on the platform.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="category">
+                Category
+            </label>
+
+            <input type="text" id="category" name="category" value="{{ lab.category or "" }}" maxlength="100"
+                placeholder="Machine Learning">
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="display_order">
+                Display Order
+            </label>
+
+            <input type="number" id="display_order" name="display_order" value="{{ lab.display_order }}" min="0"
+                step="1">
+
+            <p class="muted">
+                Lower numbers appear first.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- LEARNING CONTENT -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Learning Content
+                </h2>
+
+                <p class="subtitle">
+                    Optional resources shown on the Lab Details page.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="solution_url">
+                Solution URL
+            </label>
+
+            <input type="url" id="solution_url" name="solution_url" value="{{ lab.solution_url or "" }}"
+                placeholder="https://...">
+
+            <p class="muted">
+                Link to the official solution.
+            </p>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="video_url">
+                Explanation Video URL
+            </label>
+
+            <input type="url" id="video_url" name="video_url" value="{{ lab.video_url or "" }}"
+                placeholder="https://youtube.com/...">
+
+            <p class="muted">
+                Link to a video explaining common mistakes,
+                weaknesses, or important concepts.
+            </p>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="teacher_notes">
+                Teacher Notes
+            </label>
+
+            <textarea id="teacher_notes" name="teacher_notes" rows="8"
+                placeholder="Write notes or explanations for students...">{{ lab.teacher_notes or "" }}</textarea>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- ACTIONS -->
+    <!-- ================================================= -->
+
+    <div class="button-group">
+
+        <button type="submit" class="button button-primary">
+            Save Changes
+        </button>
+
+
+        <a class="button button-secondary" href="{{ url_for(
+                'lab_details',
+                lab_id=lab.id
+            ) }}">
+            Cancel
+        </a>
+
+    </div>
+
+</form>
+
+{% endblock %}

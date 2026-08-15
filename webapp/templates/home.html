@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    Lab Grading System
+{% endblock %}
+
+
+{% block content %}
+
+    <!-- ================================================= -->
+    <!-- HEADER -->
+    <!-- ================================================= -->
+
+    <header class="header">
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    Lab Grading System
+                </h1>
+
+                <p class="subtitle">
+                    Manage, submit, and grade your machine learning labs.
+                </p>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- USER SECTION -->
+            <!-- ================================================= -->
+
+            {% if session.get("student_id") %}
+
+                <div class="user-info">
+
+                    <p>
+                        Logged in as:
+
+                        <strong>
+                            {{ session.get("github_username") }}
+                        </strong>
+                    </p>
+
+
+                    {% if session.get("role") == "teacher" %}
+
+                        <p class="teacher-role">
+                            Teacher account
+                        </p>
+
+                        <div class="button-group">
+
+                            <a
+                                class="button button-primary"
+                                href="{{ url_for('teacher_dashboard') }}"
+                            >
+                                Teacher Dashboard
+                            </a>
+
+                            <a
+                                class="button button-secondary"
+                                href="{{ url_for('logout') }}"
+                            >
+                                Logout
+                            </a>
+
+                        </div>
+
+                    {% else %}
+
+                        <p class="teacher-role">
+                            Student account
+                        </p>
+
+                        <div class="button-group">
+
+                            <a
+                                class="button button-secondary"
+                                href="{{ url_for('logout') }}"
+                            >
+                                Logout
+                            </a>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+            {% else %}
+
+                <div class="login-section">
+
+                    <p class="subtitle">
+                        You are not logged in.
+                    </p>
+
+                    <a
+                        class="button button-primary"
+                        href="{{ url_for('login') }}"
+                    >
+                        Login with GitHub
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </header>
+
+
+    <!-- ================================================= -->
+    <!-- AVAILABLE LABS -->
+    <!-- ================================================= -->
+
+    <main>
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Available Labs
+                </h2>
+
+                <p class="subtitle">
+                    Select a lab to view its details and submissions.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% if labs %}
+
+            <div class="lab-list">
+
+                {% for lab in labs %}
+
+                    <div class="lab-item">
+
+
+                        <!-- ================================================= -->
+                        <!-- LAB INFORMATION -->
+                        <!-- ================================================= -->
+
+                        <h3>
+
+                            <a
+                                href="{{ url_for(
+                                    'lab_page',
+                                    lab_id=lab.id
+                                ) }}"
+                            >
+                                {{ lab.name }}
+                            </a>
+
+                        </h3>
+
+
+                        {% if lab.description %}
+
+                            <p class="lab-description">
+                                {{ lab.description }}
+                            </p>
+
+                        {% else %}
+
+                            <p class="muted">
+                                No description available.
+                            </p>
+
+                        {% endif %}
+
+
+                        <!-- ================================================= -->
+                        <!-- LAB ACTION -->
+                        <!-- ================================================= -->
+
+                        <div class="button-group">
+
+                            <a
+                                class="button button-primary"
+                                href="{{ url_for(
+                                    'lab_page',
+                                    lab_id=lab.id
+                                ) }}"
+                            >
+                                Open Lab
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+        {% else %}
+
+            <div class="empty-section">
+
+                <h3>
+                    No Labs Available
+                </h3>
+
+                <p class="empty-message">
+                    No labs are currently available.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </main>
+
+{% endblock %}

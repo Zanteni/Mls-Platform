@@ -1,0 +1,617 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Teacher Dashboard
+{% endblock %}
+
+{% block content %}
+
+    <!-- ================================================= -->
+    <!-- DASHBOARD HEADER -->
+    <!-- ================================================= -->
+
+    <header class="header">
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    Teacher Dashboard
+                </h1>
+
+                <div class="user-info">
+
+                    <p>
+                        Logged in as:
+
+                        <strong>
+                            {{ session.get("github_username") }}
+                        </strong>
+                    </p>
+
+                    <p class="role teacher-role">
+                        Teacher account
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="button-group">
+
+                <a
+                    class="button button-secondary"
+                    href="{{ url_for('home') }}"
+                >
+                    Home
+                </a>
+
+                <a
+                    class="button button-secondary"
+                    href="{{ url_for('logout') }}"
+                >
+                    Logout
+                </a>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================================================= -->
+    <!-- GRADING SUMMARY -->
+    <!-- ================================================= -->
+
+    {% if session.get("grading_summary") %}
+
+        {% set summary = session.get("grading_summary") %}
+
+        <section class="card">
+
+            <div class="page-header">
+
+                <div>
+
+                    <h2>
+                        Automatic Grading Complete
+                    </h2>
+
+                    <p class="subtitle">
+                        Latest grading operation summary.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="alert alert-success">
+
+                <p>
+                    <strong>
+                        {{ summary["lab_name"] }}
+                    </strong>
+                </p>
+
+                <p>
+                    Total submissions:
+
+                    <strong>
+                        {{ summary["total"] }}
+                    </strong>
+                </p>
+
+                <p>
+                    Successfully graded:
+
+                    <strong>
+                        {{ summary["successful"] }}
+                    </strong>
+                </p>
+
+
+                {% if summary["failed"] > 0 %}
+
+                    <p class="text-warning">
+
+                        Failed:
+
+                        <strong>
+                            {{ summary["failed"] }}
+                        </strong>
+
+                    </p>
+
+
+                    {% if summary["errors"] %}
+
+                        <details>
+
+                            <summary>
+                                Show errors
+                            </summary>
+
+                            <ul>
+
+                                {% for error in summary["errors"] %}
+
+                                    <li>
+                                        {{ error }}
+                                    </li>
+
+                                {% endfor %}
+
+                            </ul>
+
+                        </details>
+
+                    {% endif %}
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+        {% set _ = session.pop(
+            "grading_summary",
+            None
+        ) %}
+
+    {% endif %}
+
+
+    <!-- ================================================= -->
+    <!-- LAB MANAGEMENT -->
+    <!-- ================================================= -->
+
+    <main>
+
+        <!-- ================================================= -->
+        <!-- LAB PAGE HEADER -->
+        <!-- ================================================= -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Labs
+                </h2>
+
+                <p class="subtitle">
+                    Create, organize, edit, and manage your laboratories.
+                </p>
+
+            </div>
+
+
+            <div class="button-group">
+
+                <!-- Archived Labs -->
+
+                <a
+                    class="button button-secondary"
+                    href="{{ url_for('teacher_archived_labs') }}"
+                >
+                    Archived Labs
+                </a>
+
+
+                <!-- Create Lab -->
+
+                <a
+                    class="button button-primary"
+                    href="{{ url_for('create_lab') }}"
+                >
+                    + Create Lab
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- ACTIVE / HIDDEN LABS -->
+        <!-- ================================================= -->
+
+        {% if labs %}
+
+            <div class="submissions-list">
+
+                {% for lab in labs %}
+
+                    <section class="card">
+
+                        <!-- ================================================= -->
+                        <!-- LAB HEADER -->
+                        <!-- ================================================= -->
+
+                        <div class="lab-management-header">
+
+                            <div class="lab-management-info">
+
+                                <div class="lab-title-row">
+
+                                    <h2>
+                                        {{ lab.name }}
+                                    </h2>
+
+
+                                    {% if not lab.visible %}
+
+                                        <span class="status">
+                                            Hidden
+                                        </span>
+
+                                    {% elif lab.launched %}
+
+                                        <span class="status">
+                                            Launched
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="status">
+                                            Not Launched
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                {% if lab.category %}
+
+                                    <p class="muted">
+                                        {{ lab.category }}
+                                    </p>
+
+                                {% endif %}
+
+
+                                <p class="muted">
+
+                                    Order:
+
+                                    <strong>
+                                        {{ lab.display_order }}
+                                    </strong>
+
+                                </p>
+
+                            </div>
+
+
+                            <!-- ================================================= -->
+                            <!-- LAB ACTIONS -->
+                            <!-- ================================================= -->
+
+                            <div class="button-group lab-management-actions">
+
+                                <!-- Details -->
+
+                                <a
+                                    class="button button-secondary"
+                                    href="{{ url_for(
+                                        'lab_details',
+                                        lab_id=lab.id
+                                    ) }}"
+                                >
+                                    Details
+                                </a>
+
+
+                                <!-- Edit -->
+
+                                <a
+                                    class="button button-primary"
+                                    href="{{ url_for(
+                                        'edit_lab',
+                                        lab_id=lab.id
+                                    ) }}"
+                                >
+                                    Edit
+                                </a>
+
+
+                                {% if lab.visible %}
+
+                                    <!-- Hide -->
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'hide_lab',
+                                            lab_id=lab.id
+                                        ) }}"
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="button button-secondary"
+                                            onclick="return confirm(
+                                                'Hide this lab from students?'
+                                            );"
+                                        >
+                                            Hide
+                                        </button>
+
+                                    </form>
+
+
+                                    <!-- Archive -->
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'archive_lab',
+                                            lab_id=lab.id
+                                        ) }}"
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="button button-danger"
+                                            onclick="return confirm(
+                                                'Archive this lab? It will be hidden and submissions will be closed.'
+                                            );"
+                                        >
+                                            Archive
+                                        </button>
+
+                                    </form>
+
+
+                                {% else %}
+
+                                    <!-- Show -->
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'show_lab',
+                                            lab_id=lab.id
+                                        ) }}"
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="button button-secondary"
+                                        >
+                                            Show
+                                        </button>
+
+                                    </form>
+
+
+                                    <!-- Archive -->
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'archive_lab',
+                                            lab_id=lab.id
+                                        ) }}"
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="button button-danger"
+                                            onclick="return confirm(
+                                                'Archive this lab?'
+                                            );"
+                                        >
+                                            Archive
+                                        </button>
+
+                                    </form>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ================================================= -->
+                        <!-- LAB DESCRIPTION -->
+                        <!-- ================================================= -->
+
+                        {% if lab.description %}
+
+                            <p class="lab-description">
+                                {{ lab.description }}
+                            </p>
+
+                        {% else %}
+
+                            <p class="muted">
+                                No description available.
+                            </p>
+
+                        {% endif %}
+
+
+                        <!-- ================================================= -->
+                        <!-- LAB STATISTICS -->
+                        <!-- ================================================= -->
+
+                        {% set lab_submissions =
+                            submissions
+                            |selectattr(
+                                "lab_id",
+                                "equalto",
+                                lab.id
+                            )
+                            |list
+                        %}
+
+
+                        {% set current_submissions =
+                            lab_submissions
+                            |selectattr(
+                                "is_current",
+                                "equalto",
+                                true
+                            )
+                            |list
+                        %}
+
+
+                        <div
+                            class="info-grid"
+                            style="margin-top: 20px;"
+                        >
+
+                            <!-- Total submissions -->
+
+                            <div class="info-item">
+
+                                <span class="label">
+                                    Total Submissions
+                                </span>
+
+                                <strong>
+                                    {{ lab_submissions|length }}
+                                </strong>
+
+                            </div>
+
+
+                            <!-- Current submissions -->
+
+                            <div class="info-item">
+
+                                <span class="label">
+                                    Current Submissions
+                                </span>
+
+                                <strong>
+                                    {{ current_submissions|length }}
+                                </strong>
+
+                            </div>
+
+
+                            <!-- Submission window -->
+
+                            <div class="info-item">
+
+                                <span class="label">
+                                    Submission Window
+                                </span>
+
+                                {% if lab.submission_open %}
+
+                                    <strong class="score">
+                                        Open
+                                    </strong>
+
+                                {% else %}
+
+                                    <span class="not-graded">
+                                        Closed
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- Deadline -->
+
+                            <div class="info-item">
+
+                                <span class="label">
+                                    Deadline
+                                </span>
+
+                                {% if lab.submission_deadline %}
+
+                                    <strong>
+                                        {{ lab.submission_deadline }}
+                                    </strong>
+
+                                {% else %}
+
+                                    <span class="muted">
+                                        No deadline
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ================================================= -->
+                        <!-- SUBMISSION MANAGEMENT -->
+                        <!-- ================================================= -->
+
+                        <div
+                            class="button-group"
+                            style="margin-top: 20px;"
+                        >
+
+                            <a
+                                class="button button-primary"
+                                href="{{ url_for(
+                                    'teacher_lab_submissions',
+                                    lab_id=lab.id
+                                ) }}"
+                            >
+                                Manage Submissions
+                            </a>
+
+                        </div>
+
+                    </section>
+
+                {% endfor %}
+
+            </div>
+
+
+        {% else %}
+
+            <!-- ================================================= -->
+            <!-- NO ACTIVE LABS -->
+            <!-- ================================================= -->
+
+            <div class="empty-section">
+
+                <h3>
+                    No Labs Yet
+                </h3>
+
+                <p class="empty-message">
+                    Create your first laboratory to get started.
+                </p>
+
+
+                <div class="button-group">
+
+                    <a
+                        class="button button-primary"
+                        href="{{ url_for('create_lab') }}"
+                    >
+                        + Create First Lab
+                    </a>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </main>
+
+{% endblock %}

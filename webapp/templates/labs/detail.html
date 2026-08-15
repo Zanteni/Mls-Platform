@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    {{ lab.name }} — Lab Details
+{% endblock %}
+
+
+{% block content %}
+
+    <!-- ================================================= -->
+    <!-- LAB HEADER -->
+    <!-- ================================================= -->
+
+    <header class="header">
+
+        <div class="page-header">
+
+            <div>
+
+                <p class="muted">
+                    Laboratory
+                </p>
+
+                <h1>
+                    {{ lab.name }}
+                </h1>
+
+                {% if lab.description %}
+
+                    <p class="lab-description">
+                        {{ lab.description }}
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================================================= -->
+    <!-- LAB OVERVIEW -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Lab Overview
+                </h2>
+
+                <p class="subtitle">
+                    Information and resources for this laboratory.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% if lab.description %}
+
+            <p>
+                {{ lab.description }}
+            </p>
+
+        {% else %}
+
+            <p class="muted">
+                No description has been added for this laboratory yet.
+            </p>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- ASSIGNMENT -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Assignment
+                </h2>
+
+                <p class="subtitle">
+                    Official laboratory assignment.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% if lab.github_url %}
+
+            <a
+                class="button button-primary"
+                href="{{ lab.github_url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Open Assignment on GitHub ↗
+            </a>
+
+        {% else %}
+
+            <p class="muted">
+                No assignment repository has been configured yet.
+            </p>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- SOLUTION -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Solution
+                </h2>
+
+                <p class="subtitle">
+                    Official solution and explanations.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="empty-section">
+
+            <h3>
+                Solution not available yet
+            </h3>
+
+            <p class="empty-message">
+                The teacher has not published a solution for this
+                laboratory yet.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- VIDEO EXPLANATION -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Video Explanation
+                </h2>
+
+                <p class="subtitle">
+                    Explanation of common mistakes, weaknesses,
+                    and important concepts.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="empty-section">
+
+            <h3>
+                No video available
+            </h3>
+
+            <p class="empty-message">
+                A video explanation will appear here when the teacher
+                publishes one.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- RESOURCES -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>
+                    Resources
+                </h2>
+
+                <p class="subtitle">
+                    Additional material related to this laboratory.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="empty-section">
+
+            <h3>
+                No resources yet
+            </h3>
+
+            <p class="empty-message">
+                Additional resources will appear here.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- NAVIGATION -->
+    <!-- ================================================= -->
+
+    <footer class="page-footer">
+
+        <a
+            class="button button-secondary"
+            href="{{ url_for(
+                'lab_page',
+                lab_id=lab.id
+            ) }}"
+        >
+            ← Back to Lab
+        </a>
+
+
+        <a
+            class="button button-secondary"
+            href="{{ url_for('home') }}"
+        >
+            ← Home
+        </a>
+
+    </footer>
+
+{% endblock %}
+

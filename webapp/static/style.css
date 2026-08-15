@@ -1,0 +1,1263 @@
+/* ============================================================
+   GLOBAL
+   ============================================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --primary-light: #eef2ff;
+
+    --success: #16a34a;
+    --success-light: #dcfce7;
+
+    --warning: #d97706;
+    --warning-light: #fef3c7;
+
+    --danger: #dc2626;
+    --danger-light: #fee2e2;
+
+    --info: #2563eb;
+    --info-light: #dbeafe;
+
+    --text: #111827;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
+
+    --border: #e5e7eb;
+    --background: #f5f7fb;
+    --surface: #ffffff;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.07);
+    --shadow-lg: 0 12px 35px rgba(15, 23, 42, 0.10);
+}
+
+
+/* ============================================================
+   BODY
+   ============================================================ */
+
+body {
+    margin: 0;
+    padding: 0;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+    background: linear-gradient(
+        180deg,
+        #f8faff 0%,
+        #f5f7fb 100%
+    );
+
+    color: var(--text);
+    line-height: 1.6;
+}
+
+
+/* ============================================================
+   LINKS
+   ============================================================ */
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+
+    transition:
+        color 0.2s ease,
+        opacity 0.2s ease;
+}
+
+a:hover {
+    color: var(--primary-dark);
+    text-decoration: none;
+}
+
+
+/* ============================================================
+   CONTAINER
+   ============================================================ */
+
+.container {
+    width: min(1150px, 92%);
+    margin: 40px auto;
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 0;
+}
+
+.header {
+    margin-bottom: 35px;
+}
+
+.header h1 {
+    margin: 0;
+
+    font-size: 34px;
+    font-weight: 750;
+
+    letter-spacing: -0.5px;
+}
+
+.header p {
+    margin-top: 8px;
+    color: var(--text-secondary);
+}
+
+
+/* ============================================================
+   PAGE HEADER
+   ============================================================ */
+
+.page-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+
+    margin-bottom: 25px;
+}
+
+.page-header h1,
+.page-header h2 {
+    margin: 0;
+}
+
+.subtitle {
+    margin-top: 5px;
+
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+
+h1 {
+    margin-top: 0;
+
+    font-size: 34px;
+    line-height: 1.2;
+
+    letter-spacing: -0.5px;
+}
+
+h2 {
+    margin-top: 30px;
+    margin-bottom: 18px;
+
+    font-size: 24px;
+
+    letter-spacing: -0.2px;
+}
+
+h3 {
+    font-size: 18px;
+    margin-top: 0;
+}
+
+p {
+    margin: 8px 0;
+}
+
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+
+.card {
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    padding: 26px;
+
+    margin-bottom: 22px;
+
+    box-shadow: var(--shadow-sm);
+
+    transition:
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+
+/* ============================================================
+   LAB LIST
+   ============================================================ */
+
+.lab-list {
+    list-style: none;
+
+    padding: 0;
+    margin: 20px 0;
+}
+
+.lab-item {
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    padding: 24px;
+
+    margin-bottom: 16px;
+
+    box-shadow: var(--shadow-sm);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.lab-item:hover {
+    transform: translateY(-2px);
+
+    box-shadow: var(--shadow-md);
+
+    border-color: #c7d2fe;
+}
+
+.lab-item h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+
+/* ============================================================
+   SUBMISSION CARDS
+   ============================================================ */
+
+.submissions-list {
+    display: grid;
+    gap: 18px;
+}
+
+.submission-card {
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    padding: 22px;
+
+    box-shadow: var(--shadow-sm);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.submission-card:hover {
+    transform: translateY(-2px);
+
+    border-color: #c7d2fe;
+
+    box-shadow: var(--shadow-md);
+}
+
+.submission-card h3 {
+    margin-bottom: 12px;
+    font-size: 19px;
+}
+
+.submission-card p {
+    color: var(--text-secondary);
+}
+
+.submission-card strong {
+    color: var(--text);
+}
+
+.submission-actions {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin-top: 18px;
+}
+
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 10px 17px;
+
+    border-radius: var(--radius-sm);
+
+    border: 1px solid transparent;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.15s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+
+    text-decoration: none;
+}
+
+.button:hover {
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.button:active {
+    transform: translateY(0);
+}
+
+
+/* Primary */
+
+.button-primary {
+    background: var(--primary);
+    color: white;
+
+    box-shadow:
+        0 3px 8px rgba(79, 70, 229, 0.22);
+}
+
+.button-primary:hover {
+    background: var(--primary-dark);
+    color: white;
+
+    box-shadow:
+        0 5px 14px rgba(79, 70, 229, 0.28);
+}
+
+
+/* Secondary */
+
+.button-secondary {
+    background: white;
+    color: #374151;
+
+    border-color: var(--border);
+}
+
+.button-secondary:hover {
+    background: #f9fafb;
+    color: #111827;
+}
+
+
+/* Success */
+
+.button-success {
+    background: var(--success);
+    color: white;
+}
+
+.button-success:hover {
+    background: #15803d;
+    color: white;
+}
+
+
+/* Danger */
+
+.button-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.button-danger:hover {
+    background: #b91c1c;
+    color: white;
+}
+
+
+/* ============================================================
+   BUTTON GROUP
+   ============================================================ */
+
+.button-group {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin-top: 18px;
+}
+
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: var(--text);
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    max-width: 700px;
+
+    padding: 11px 13px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: var(--radius-sm);
+
+    background: white;
+
+    color: var(--text);
+
+    font-family: inherit;
+    font-size: 15px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+input:hover,
+textarea:hover,
+select:hover {
+    border-color: #9ca3af;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 130px;
+}
+
+
+/* ============================================================
+   SUBMISSION FORM
+   ============================================================ */
+
+.submission-form {
+    max-width: 700px;
+}
+
+.submit-section {
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    padding: 28px;
+
+    box-shadow: var(--shadow-sm);
+}
+
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+
+.table-container {
+    overflow-x: auto;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    background: var(--surface);
+}
+
+th,
+td {
+    padding: 15px 16px;
+
+    text-align: left;
+
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    background: #f8fafc;
+
+    color: #4b5563;
+
+    font-size: 13px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
+
+    font-weight: 700;
+}
+
+td {
+    font-size: 14px;
+}
+
+tbody tr {
+    transition: background 0.15s ease;
+}
+
+tbody tr:hover {
+    background: #fafbff;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* ============================================================
+   STATUS BADGES
+   ============================================================ */
+
+.status {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    background: #f3f4f6;
+
+    color: #4b5563;
+}
+
+.status-submitted {
+    background: var(--info-light);
+    color: #1d4ed8;
+}
+
+.status-published {
+    background: var(--success-light);
+    color: #15803d;
+}
+
+.status-pending {
+    background: var(--warning-light);
+    color: #92400e;
+}
+
+
+/* ============================================================
+   GRADES
+   ============================================================ */
+
+.grade {
+    font-size: 38px;
+
+    font-weight: 800;
+
+    letter-spacing: -1px;
+
+    color: var(--primary);
+}
+
+.grade-value {
+    display: block;
+
+    font-size: 38px;
+
+    font-weight: 800;
+
+    color: var(--primary);
+}
+
+.score {
+    font-weight: 750;
+
+    color: var(--primary);
+}
+
+.score-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    background: var(--primary-light);
+
+    color: var(--primary-dark);
+
+    font-weight: 700;
+
+    font-size: 13px;
+}
+
+.not-graded,
+.not-available {
+    color: var(--text-muted);
+
+    font-size: 14px;
+}
+
+
+/* ============================================================
+   GRADE BOX
+   ============================================================ */
+
+.grade-box {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 20px;
+
+    border-radius: var(--radius-md);
+
+    background: linear-gradient(
+        135deg,
+        #eef2ff,
+        #f8fafc
+    );
+
+    border: 1px solid #e0e7ff;
+}
+
+.grade-box .label {
+    color: #4b5563;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   NOTEBOOK CARDS
+   ============================================================ */
+
+.notebook-card {
+    background: #fafbff;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+
+    padding: 20px;
+
+    margin-bottom: 16px;
+}
+
+.notebook-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 15px;
+}
+
+.notebook-header h3 {
+    margin: 0;
+
+    font-size: 17px;
+}
+
+
+/* ============================================================
+   CHECK LIST
+   ============================================================ */
+
+.check-list {
+    list-style: none;
+
+    padding: 0;
+
+    margin: 18px 0 0;
+}
+
+.check-item {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding: 12px 14px;
+
+    margin-bottom: 8px;
+
+    border-radius: var(--radius-sm);
+
+    border: 1px solid var(--border);
+
+    background: white;
+}
+
+.check-item p {
+    margin: 4px 0 0;
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+
+    white-space: pre-wrap;
+}
+
+.check-icon {
+    font-size: 17px;
+}
+
+.check-passed {
+    border-color: #bbf7d0;
+
+    background: #f0fdf4;
+}
+
+.check-failed {
+    border-color: #fecaca;
+
+    background: #fef2f2;
+}
+
+.check-pass {
+    color: var(--success);
+}
+
+.check-fail {
+    color: var(--danger);
+}
+
+
+/* ============================================================
+   ALERTS
+   ============================================================ */
+
+.alert {
+    padding: 15px 17px;
+
+    border-radius: var(--radius-md);
+
+    margin: 18px 0;
+
+    border: 1px solid transparent;
+}
+
+.alert p {
+    margin-top: 6px;
+}
+
+.alert-success {
+    background: var(--success-light);
+
+    color: #166534;
+
+    border-color: #bbf7d0;
+}
+
+.alert-warning {
+    background: var(--warning-light);
+
+    color: #92400e;
+
+    border-color: #fde68a;
+}
+
+.alert-error {
+    background: var(--danger-light);
+
+    color: #991b1b;
+
+    border-color: #fecaca;
+}
+
+.alert-info {
+    background: var(--info-light);
+
+    color: #1e40af;
+
+    border-color: #bfdbfe;
+}
+
+
+/* ============================================================
+   INFORMATION GRID
+   ============================================================ */
+
+.info-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 18px;
+}
+
+.info-item {
+    padding: 15px;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+
+    background: #fafafa;
+}
+
+.info-item .label {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+
+    text-transform: uppercase;
+
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+}
+
+
+/* ============================================================
+   REPOSITORY
+   ============================================================ */
+
+.repo-link {
+    display: inline-block;
+
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
+
+    padding: 12px 15px;
+
+    border-radius: var(--radius-sm);
+
+    background: #f8fafc;
+
+    border: 1px solid var(--border);
+
+    font-size: 14px;
+}
+
+
+/* ============================================================
+   PUBLICATION STATUS
+   ============================================================ */
+
+.status-published,
+.status-not-published {
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 18px;
+
+    border-radius: var(--radius-md);
+}
+
+.status-published {
+    background: #f0fdf4;
+
+    border: 1px solid #bbf7d0;
+}
+
+.status-not-published {
+    background: #f8fafc;
+
+    border: 1px solid var(--border);
+}
+
+.status-dot {
+    width: 11px;
+    height: 11px;
+
+    border-radius: 50%;
+
+    background: #9ca3af;
+
+    flex-shrink: 0;
+}
+
+.status-published .status-dot {
+    background: var(--success);
+}
+
+.status-published p,
+.status-not-published p {
+    margin: 2px 0 0;
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+}
+
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+
+.nav {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+}
+
+.nav-links {
+    display: flex;
+
+    gap: 10px;
+
+    align-items: center;
+}
+
+.navigation {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top: 35px;
+
+    padding-top: 25px;
+
+    border-top: 1px solid var(--border);
+}
+
+
+/* ============================================================
+   USER INFO
+   ============================================================ */
+
+.user-info {
+    color: var(--text-secondary);
+
+    font-size: 14px;
+}
+
+.teacher-role {
+    display: inline-flex;
+
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    background: var(--primary-light);
+
+    color: var(--primary);
+
+    font-weight: 700;
+}
+
+
+/* ============================================================
+   EMPTY STATES
+   ============================================================ */
+
+.empty-section {
+    text-align: center;
+
+    padding: 55px 20px;
+
+    background: white;
+
+    border: 1px dashed #d1d5db;
+
+    border-radius: var(--radius-lg);
+}
+
+.empty-message {
+    color: var(--text-muted);
+
+    font-size: 15px;
+}
+
+
+/* ============================================================
+   MUTED TEXT
+   ============================================================ */
+
+.muted {
+    color: var(--text-muted);
+}
+
+
+/* ============================================================
+   LAB DESCRIPTION
+   ============================================================ */
+
+.lab-description {
+    color: var(--text-secondary);
+
+    max-width: 750px;
+
+    font-size: 15px;
+}
+
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+.page-footer {
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-top: 30px;
+
+    padding-top: 25px;
+
+    border-top: 1px solid var(--border);
+}
+
+
+/* ============================================================
+   HORIZONTAL RULE
+   ============================================================ */
+
+hr {
+    border: 0;
+
+    border-top: 1px solid var(--border);
+
+    margin: 35px 0;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 800px) {
+
+    .container {
+        width: 94%;
+        margin: 25px auto;
+    }
+
+    .page-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .table-container {
+        border-radius: var(--radius-md);
+    }
+
+    th,
+    td {
+        padding: 11px 12px;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .container {
+        width: 94%;
+        margin: 20px auto;
+    }
+
+    h1 {
+        font-size: 27px;
+    }
+
+    h2 {
+        font-size: 21px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .submission-card {
+        padding: 18px;
+    }
+
+    .button {
+        width: 100%;
+    }
+
+    .button-group,
+    .submission-actions {
+        flex-direction: column;
+    }
+
+    .grade-box {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+    .notebook-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+    .navigation,
+    .page-footer {
+        align-items: stretch;
+
+        flex-direction: column;
+    }
+
+    .navigation .button,
+    .page-footer .button {
+        width: 100%;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 700px;
+    }
+}
+
+/* ============================================================
+   Teacher Lab Management
+   ============================================================ */
+
+.lab-management-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.lab-management-info {
+    min-width: 0;
+}
+
+.lab-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.lab-title-row h2 {
+    margin: 0;
+}
+
+.lab-management-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+}
+
+.lab-management-actions form {
+    margin: 0;
+}
+
+@media (max-width: 900px) {
+
+    .lab-management-header {
+        flex-direction: column;
+    }
+
+    .lab-management-actions {
+        justify-content: flex-start;
+    }
+
+}

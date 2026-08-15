@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Notifications
+{% endblock %}
+
+
+{% block content %}
+
+<header class="header">
+
+    <div class="page-header">
+
+        <div>
+
+            <p class="muted">
+                Student Center
+            </p>
+
+            <h1>
+                Notifications
+            </h1>
+
+            <p class="subtitle">
+                Updates about your labs, submissions, grades,
+                and teacher decisions.
+            </p>
+
+        </div>
+
+
+        <div class="button-group">
+
+            {% if unread_count > 0 %}
+
+            <form method="POST" action="{{ url_for(
+                        'mark_all_notifications_read'
+                    ) }}">
+
+                <button type="submit" class="button button-secondary">
+                    Mark All as Read
+                </button>
+
+            </form>
+
+            {% endif %}
+
+
+            <a class="button button-secondary" href="{{ url_for('home') }}">
+                Home
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<section class="card">
+
+    <div class="page-header">
+
+        <div>
+
+            <h2>
+                Your Notifications
+            </h2>
+
+            <p class="subtitle">
+
+                {% if unread_count > 0 %}
+
+                {{ unread_count }}
+                unread notification(s)
+
+                {% else %}
+
+                You're all caught up.
+
+                {% endif %}
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if notifications %}
+
+    <div class="submissions-list">
+
+        {% for notification in notifications %}
+
+        <div class="submission-card" {% if not notification.read %} style="border-left: 4px solid var(--primary-color);"
+            {% endif %}>
+
+            <div class="notebook-header">
+
+                <div>
+
+                    <h3>
+                        {{ notification.title }}
+                    </h3>
+
+                    <span class="status">
+                        {{ notification.notification_type }}
+                    </span>
+
+                </div>
+
+
+                {% if notification.read %}
+
+                <span class="muted">
+                    Read
+                </span>
+
+                {% else %}
+
+                <strong class="score">
+                    New
+                </strong>
+
+                {% endif %}
+
+            </div>
+
+
+            <p style="margin-top: 14px;">
+                {{ notification.message }}
+            </p>
+
+
+            <p class="muted">
+                {{ notification.created_at }}
+            </p>
+
+
+            {% if not notification.read %}
+
+            <form method="POST" action="{{ url_for(
+                                'mark_notification_read',
+                                notification_id=notification.id
+                            ) }}">
+
+                <button type="submit" class="button button-secondary">
+                    Open Notification
+                </button>
+
+            </form>
+
+            {% elif notification.submission_id %}
+
+            <a class="button button-secondary" href="{{ url_for(
+                                'submission_page',
+                                submission_id=notification.submission_id
+                            ) }}">
+                View Submission
+            </a>
+
+            {% elif notification.lab_id %}
+
+            <a class="button button-secondary" href="{{ url_for(
+                                'lab_page',
+                                lab_id=notification.lab_id
+                            ) }}">
+                Open Lab
+            </a>
+
+            {% endif %}
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-section">
+
+        <h3>
+            No Notifications
+        </h3>
+
+        <p class="empty-message">
+            You don't have any notifications yet.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+
+<footer class="page-footer">
+
+    <a class="button button-secondary" href="{{ url_for('home') }}">
+        ← Back to Home
+    </a>
+
+</footer>
+
+{% endblock %}

@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+            MLS Lab Platform
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='style.css'
+        ) }}"
+    >
+
+    {% block extra_head %}
+    {% endblock %}
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    {% block content %}
+    {% endblock %}
+
+
+    <!-- ================================================= -->
+    <!-- GLOBAL NAVIGATION -->
+    <!-- ================================================= -->
+
+    <footer class="navigation">
+
+        <!-- ================================================= -->
+        <!-- HOME -->
+        <!-- ================================================= -->
+
+        <a
+            class="button button-secondary"
+            href="{{ url_for('home') }}"
+        >
+            ← Dashboard
+        </a>
+
+
+        {% if session.get("student_id") %}
+
+
+            <!-- ================================================= -->
+            <!-- STUDENT NOTIFICATIONS -->
+            <!-- ================================================= -->
+
+            {% if session.get("role") != "teacher" %}
+
+                <a
+                    class="button button-secondary"
+                    href="{{ url_for('notifications') }}"
+                >
+
+                    Notifications
+
+                    {% if unread_notification_count > 0 %}
+
+                        <strong>
+                            • {{ unread_notification_count }}
+                        </strong>
+
+                    {% endif %}
+
+                </a>
+
+            {% endif %}
+
+
+            <!-- ================================================= -->
+            <!-- TEACHER DASHBOARD -->
+            <!-- ================================================= -->
+
+            {% if session.get("role") == "teacher" %}
+
+                <a
+                    class="button button-secondary"
+                    href="{{ url_for('teacher_dashboard') }}"
+                >
+                    Teacher Dashboard
+                </a>
+
+            {% endif %}
+
+
+            <!-- ================================================= -->
+            <!-- LOGOUT -->
+            <!-- ================================================= -->
+
+            <a
+                class="button button-secondary"
+                href="{{ url_for('logout') }}"
+            >
+                Logout
+            </a>
+
+        {% endif %}
+
+    </footer>
+
+</div>
+
+
+{% block extra_scripts %}
+{% endblock %}
+
+</body>
+
+</html>
+

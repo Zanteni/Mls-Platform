@@ -1,0 +1,2270 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ lab.name }} — Lab Grading System
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <!-- ================================================= -->
+    <!-- LAB HEADER -->
+    <!-- ================================================= -->
+
+    <header class="header">
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    {{ lab.name }}
+                </h1>
+
+                {% if lab.description %}
+
+                    <p class="lab-description">
+                        {{ lab.description }}
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================================================= -->
+    <!-- TEACHER VIEW -->
+    <!-- ================================================= -->
+
+    {% if session.get("role") == "teacher" %}
+
+        <main>
+
+
+            <!-- ================================================= -->
+            <!-- FLASH MESSAGES -->
+            <!-- ================================================= -->
+
+            {% with messages = get_flashed_messages(
+                with_categories=true
+            ) %}
+
+                {% if messages %}
+
+                    {% for category, message in messages %}
+
+                        <div
+                            class="
+                                alert
+                                {% if category == 'success' %}
+                                    alert-success
+                                {% elif category == 'warning' %}
+                                    alert-warning
+                                {% elif category == 'danger' %}
+                                    alert-warning
+                                {% else %}
+                                    alert-info
+                                {% endif %}
+                            "
+                            style="margin-bottom: 18px;"
+                        >
+
+                            <strong>
+                                {{ message }}
+                            </strong>
+
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <!-- ================================================= -->
+            <!-- LAB LAUNCH -->
+            <!-- ================================================= -->
+
+            <section class="card">
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h2>
+                            Lab Launch
+                        </h2>
+
+                        <p class="subtitle">
+                            Control whether students can access this laboratory.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                {% if lab.launched %}
+
+                    <div class="status-published">
+
+                        <span class="status-dot"></span>
+
+                        <div>
+
+                            <strong>
+                                Lab Launched
+                            </strong>
+
+                            <p>
+                                Students can access this laboratory.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="status-not-published">
+
+                        <span class="status-dot"></span>
+
+                        <div>
+
+                            <strong>
+                                Lab Not Launched
+                            </strong>
+
+                            <p>
+                                Students cannot access the laboratory yet.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'update_lab_launch',
+                        lab_id=lab.id
+                    ) }}"
+                    style="margin-top: 20px;"
+                >
+
+                    {% if lab.launched %}
+
+                        <button
+                            type="submit"
+                            name="action"
+                            value="unlaunch"
+                            class="button button-secondary"
+                            onclick="return confirm(
+                                'Are you sure you want to unlaunch this lab? Students will no longer be able to access the lab.'
+                            );"
+                        >
+                            Unlaunch Lab
+                        </button>
+
+                    {% else %}
+
+                        <button
+                            type="submit"
+                            name="action"
+                            value="launch"
+                            class="button button-primary"
+                            onclick="return confirm(
+                                'Are you sure you want to launch this lab?'
+                            );"
+                        >
+                            Launch Lab
+                        </button>
+
+                    {% endif %}
+
+                </form>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- TEACHER LAB ASSIGNMENT -->
+            <!-- ================================================= -->
+
+            <section class="card">
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h2>
+                            Lab Assignment
+                        </h2>
+
+                        <p class="subtitle">
+                            Official laboratory assignment and repository.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                {% if lab.github_url %}
+
+                    <a
+                        class="button button-primary"
+                        href="{{ lab.github_url }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Open Lab on GitHub ↗
+                    </a>
+
+                {% else %}
+
+                    <p class="muted">
+                        No GitHub repository has been configured for this lab.
+                    </p>
+
+                {% endif %}
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- SUBMISSION WINDOW -->
+            <!-- ================================================= -->
+
+            <section class="card">
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h2>
+                            Submission Window
+                        </h2>
+
+                        <p class="subtitle">
+                            Control when students are allowed to submit this lab.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                {% if lab.submission_open
+                    and (
+                        lab.submission_deadline is none
+                        or now < lab.submission_deadline
+                    )
+                %}
+
+                    <div class="status-published">
+
+                        <span class="status-dot"></span>
+
+                        <div>
+
+                            <strong>
+                                Submissions Open
+                            </strong>
+
+                            {% if lab.submission_deadline %}
+
+                                <p>
+                                    Deadline:
+                                    <strong>
+                                        {{ lab.submission_deadline }}
+                                    </strong>
+                                </p>
+
+                            {% else %}
+
+                                <p>
+                                    No deadline has been set.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="status-not-published">
+
+                        <span class="status-dot"></span>
+
+                        <div>
+
+                            <strong>
+                                Submissions Closed
+                            </strong>
+
+                            {% if lab.submission_deadline
+                                and now >= lab.submission_deadline %}
+
+                                <p>
+                                    The submission deadline has passed.
+                                </p>
+
+                            {% else %}
+
+                                <p>
+                                    Submissions were manually closed.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'update_submission_settings',
+                        lab_id=lab.id
+                    ) }}"
+                    style="margin-top: 20px;"
+                >
+
+                    <div class="form-group">
+
+                        <label for="submission_deadline">
+                            Submission Deadline
+                        </label>
+
+                        <input
+                            type="datetime-local"
+                            id="submission_deadline"
+                            name="submission_deadline"
+
+                            {% if lab.submission_deadline %}
+
+                                value="{{
+                                    lab.submission_deadline.strftime(
+                                        '%Y-%m-%dT%H:%M'
+                                    )
+                                }}"
+
+                            {% endif %}
+
+                        >
+
+                        <p class="muted">
+                            Leave empty for no automatic deadline.
+                        </p>
+
+                    </div>
+
+
+                    <div class="button-group">
+
+                        <button
+                            type="submit"
+                            name="action"
+                            value="save_deadline"
+                            class="button button-secondary"
+                        >
+                            Save Deadline
+                        </button>
+
+
+                        {% if lab.submission_open %}
+
+                            <button
+                                type="submit"
+                                name="action"
+                                value="close"
+                                class="button button-secondary"
+                            >
+                                Close Submissions
+                            </button>
+
+                        {% else %}
+
+                            <button
+                                type="submit"
+                                name="action"
+                                value="open"
+                                class="button button-primary"
+                            >
+                                Open Submissions
+                            </button>
+
+                        {% endif %}
+
+                    </div>
+
+                </form>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- PUBLICATION RESULT MESSAGES -->
+            <!-- ================================================= -->
+
+            {% if request.args.get("published")|int > 0 %}
+
+                <div class="alert alert-success">
+
+                    <strong>
+                        Publication completed.
+                    </strong>
+
+                    <p>
+                        {{ request.args.get("published")|int }}
+                        grade(s) published successfully.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+
+            {% if request.args.get("already_published")|int > 0 %}
+
+                <div class="alert alert-info">
+
+                    <strong>
+                        Already published.
+                    </strong>
+
+                    <p>
+                        {{ request.args.get("already_published")|int }}
+                        submission(s) were already published and were skipped.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+
+            {% if request.args.get("not_ready")|int > 0 %}
+
+                <div class="alert alert-warning">
+
+                    <strong>
+                        Not ready for publication.
+                    </strong>
+
+                    <p>
+                        {{ request.args.get("not_ready")|int }}
+                        submission(s) were not ready to publish.
+                    </p>
+
+                    <p>
+                        A submission must have:
+                    </p>
+
+                    <ul>
+
+                        <li>
+                            automatic grading completed
+                        </li>
+
+                        <li>
+                            teacher score entered
+                        </li>
+
+                        <li>
+                            status <strong>graded</strong>
+                        </li>
+
+                        <li>
+                            not already be published
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            {% endif %}
+
+
+            {% if request.args.get("email_errors")|int > 0 %}
+
+                <div class="alert alert-warning">
+
+                    <strong>
+                        Some emails could not be sent.
+                    </strong>
+
+                    <p>
+                        {{ request.args.get("email_errors")|int }}
+                        email(s) failed.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- ================================================= -->
+            <!-- SUBMISSIONS HEADER -->
+            <!-- ================================================= -->
+
+            <div class="page-header">
+
+                <div>
+
+                    <h2>
+                        Submissions
+                    </h2>
+
+                    <p class="subtitle">
+                        Review, grade, publish, and manage student submissions.
+                    </p>
+
+                </div>
+
+
+                {% if submissions %}
+
+                    <div class="button-group">
+
+
+                        <!-- ============================================== -->
+                        <!-- ALLOW ALL -->
+                        <!-- ============================================== -->
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'allow_resubmit_all',
+                                lab_id=lab.id
+                            ) }}"
+                        >
+
+                            <button
+                                type="submit"
+                                class="button button-secondary"
+                                onclick="return confirm(
+                                    'Allow all eligible current students to resubmit this lab?'
+                                );"
+                            >
+                                Allow Resubmit All Students
+                            </button>
+
+                        </form>
+
+
+                        <!-- ============================================== -->
+                        <!-- REJECT ALL -->
+                        <!-- ============================================== -->
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'reject_resubmit_all',
+                                lab_id=lab.id
+                            ) }}"
+                        >
+
+                            <button
+                                type="submit"
+                                class="button button-danger"
+                                onclick="return confirm(
+                                    'Reject all pending resubmission requests for this lab?'
+                                );"
+                            >
+                                Reject All Requests
+                            </button>
+
+                        </form>
+
+
+                        <!-- ============================================== -->
+                        <!-- BLOCK ALL -->
+                        <!-- ============================================== -->
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'block_resubmit_all',
+                                lab_id=lab.id
+                            ) }}"
+                        >
+
+                            <button
+                                type="submit"
+                                class="button button-danger"
+                                onclick="return confirm(
+                                    'Block resubmission requests for all current students in this lab?'
+                                );"
+                            >
+                                Block All Requests
+                            </button>
+
+                        </form>
+
+
+                        <!-- ============================================== -->
+                        <!-- UNBLOCK ALL -->
+                        <!-- ============================================== -->
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'unblock_resubmit_all',
+                                lab_id=lab.id
+                            ) }}"
+                        >
+
+                            <button
+                                type="submit"
+                                class="button button-secondary"
+                                onclick="return confirm(
+                                    'Unblock resubmission requests for all current students in this lab?'
+                                );"
+                            >
+                                Unblock All Requests
+                            </button>
+
+                        </form>
+
+
+                        <!-- ============================================== -->
+                        <!-- GRADE ALL -->
+                        <!-- ============================================== -->
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'grade_all_submissions',
+                                lab_id=lab.id
+                            ) }}"
+                        >
+
+                            <button
+                                type="submit"
+                                class="button button-primary"
+                                onclick="return confirm(
+                                    'Are you sure you want to automatically grade all current submissions for this lab?'
+                                );"
+                            >
+                                Grade All Submissions
+                            </button>
+
+                        </form>
+
+
+                        <!-- ============================================== -->
+                        <!-- PUBLISH ALL -->
+                        <!-- ============================================== -->
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'publish_all_ready_results',
+                                lab_id=lab.id
+                            ) }}"
+                        >
+
+                            <button
+                                type="submit"
+                                class="button button-primary"
+                                onclick="return confirm(
+                                    'Are you sure you want to publish all ready grades and send the results to students?'
+                                );"
+                            >
+                                Publish All Ready Grades
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- SUBMISSION LIST -->
+            <!-- ================================================= -->
+
+            {% if submissions %}
+
+                <div class="submissions-list">
+
+                    {% for submission in submissions %}
+
+                        <div class="submission-card">
+
+
+                            <!-- ================================================= -->
+                            <!-- STUDENT HEADER -->
+                            <!-- ================================================= -->
+
+                            <div class="notebook-header">
+
+                                <div>
+
+                                    <h3>
+                                        {{ submission.student.github_username }}
+                                    </h3>
+
+                                    <span class="status">
+                                        {{ submission.status }}
+                                    </span>
+
+                                </div>
+
+
+                                {% if submission.grade
+                                    and submission.grade.automatic_score is not none %}
+
+                                    <span class="score-badge">
+
+                                        {{ "%.1f"|format(
+                                            submission.grade.automatic_score
+                                        ) }}%
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="score-badge">
+                                        Not graded
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- ================================================= -->
+                            <!-- RESUBMISSION MANAGEMENT -->
+                            <!-- ================================================= -->
+
+                            {% if submission.is_current %}
+
+
+                                {% if submission.resubmission_blocked %}
+
+                                    <div
+                                        class="alert alert-warning"
+                                        style="margin-top: 18px;"
+                                    >
+
+                                        <strong>
+                                            Resubmission Requests Blocked
+                                        </strong>
+
+                                        <p>
+                                            This student cannot request
+                                            another attempt while requests
+                                            are blocked.
+                                        </p>
+
+                                    </div>
+
+
+                                {% elif submission.resubmission_requested %}
+
+                                    <div
+                                        class="alert alert-warning"
+                                        style="margin-top: 18px;"
+                                    >
+
+                                        <strong>
+                                            Resubmission Requested
+                                        </strong>
+
+                                        <p>
+                                            This student has requested permission
+                                            to submit a new attempt.
+                                        </p>
+
+
+                                        <div class="button-group">
+
+                                            <form
+                                                method="POST"
+                                                action="{{ url_for(
+                                                    'allow_resubmission',
+                                                    submission_id=submission.id
+                                                ) }}"
+                                            >
+
+                                                <button
+                                                    type="submit"
+                                                    class="button button-primary"
+                                                    onclick="return confirm(
+                                                        'Allow this student to submit one new attempt?'
+                                                    );"
+                                                >
+                                                    Allow Resubmit
+                                                </button>
+
+                                            </form>
+
+
+                                            <form
+                                                method="POST"
+                                                action="{{ url_for(
+                                                    'reject_resubmission',
+                                                    submission_id=submission.id
+                                                ) }}"
+                                            >
+
+                                                <button
+                                                    type="submit"
+                                                    class="button button-danger"
+                                                    onclick="return confirm(
+                                                        'Reject this resubmission request?'
+                                                    );"
+                                                >
+                                                    Reject
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+
+                                    </div>
+
+
+                                {% elif submission.resubmission_allowed %}
+
+                                    <div
+                                        class="alert alert-success"
+                                        style="margin-top: 18px;"
+                                    >
+
+                                        <strong>
+                                            Resubmission Allowed
+                                        </strong>
+
+                                        <p>
+                                            This student is allowed to submit
+                                            one new attempt.
+                                        </p>
+
+                                    </div>
+
+
+                                {% elif submission.attempt_number >= 3 %}
+
+                                    <div
+                                        class="alert alert-info"
+                                        style="margin-top: 18px;"
+                                    >
+
+                                        <strong>
+                                            Maximum Attempts Reached
+                                        </strong>
+
+                                        <p>
+                                            This student has reached the maximum
+                                            of 3 attempts for this lab.
+                                        </p>
+
+                                    </div>
+
+
+                                {% elif submission.resubmission_rejections >= 3 %}
+
+                                    <div
+                                        class="alert alert-warning"
+                                        style="margin-top: 18px;"
+                                    >
+
+                                        <strong>
+                                            Resubmission Requests Exhausted
+                                        </strong>
+
+                                        <p>
+                                            This student's resubmission requests
+                                            have been rejected 3 times.
+                                        </p>
+
+                                    </div>
+
+                                {% endif %}
+
+
+                                <!-- ============================================== -->
+                                <!-- REJECTION COUNT -->
+                                <!-- ============================================== -->
+
+                                <div
+                                    class="info-grid"
+                                    style="margin-top: 18px;"
+                                >
+
+                                    <div class="info-item">
+
+                                        <span class="label">
+                                            Rejected Requests
+                                        </span>
+
+                                        <strong>
+                                            {{ submission.resubmission_rejections }} / 3
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div class="info-item">
+
+                                        <span class="label">
+                                            Request Blocking
+                                        </span>
+
+                                        {% if submission.resubmission_blocked %}
+
+                                            <strong class="not-graded">
+                                                Blocked
+                                            </strong>
+
+                                        {% else %}
+
+                                            <strong class="score">
+                                                Enabled
+                                            </strong>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- ============================================== -->
+                                <!-- LAST DECISION -->
+                                <!-- ============================================== -->
+
+                                {% if submission.resubmission_message %}
+
+                                    <div
+                                        class="alert alert-info"
+                                        style="margin-top: 18px;"
+                                    >
+
+                                        <strong>
+                                            Last Resubmission Decision
+                                        </strong>
+
+                                        <p>
+                                            {{ submission.resubmission_message }}
+                                        </p>
+
+                                    </div>
+
+                                {% endif %}
+
+
+                                <!-- ============================================== -->
+                                <!-- INDIVIDUAL BLOCK / UNBLOCK -->
+                                <!-- ============================================== -->
+
+                                <div
+                                    class="button-group"
+                                    style="margin-top: 18px;"
+                                >
+
+                                    {% if submission.resubmission_blocked %}
+
+                                        <form
+                                            method="POST"
+                                            action="{{ url_for(
+                                                'unblock_resubmission',
+                                                submission_id=submission.id
+                                            ) }}"
+                                        >
+
+                                            <button
+                                                type="submit"
+                                                class="button button-secondary"
+                                                onclick="return confirm(
+                                                    'Unblock resubmission requests for this student?'
+                                                );"
+                                            >
+                                                Unblock Requests
+                                            </button>
+
+                                        </form>
+
+                                    {% else %}
+
+                                        <form
+                                            method="POST"
+                                            action="{{ url_for(
+                                                'block_resubmission',
+                                                submission_id=submission.id
+                                            ) }}"
+                                        >
+
+                                            <button
+                                                type="submit"
+                                                class="button button-danger"
+                                                onclick="return confirm(
+                                                    'Block resubmission requests for this student?'
+                                                );"
+                                            >
+                                                Block Requests
+                                            </button>
+
+                                        </form>
+
+                                    {% endif %}
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- ================================================= -->
+                            <!-- GRADES -->
+                            <!-- ================================================= -->
+
+                            <div class="info-grid">
+
+                                <div class="info-item">
+
+                                    <span class="label">
+                                        Automatic Grade
+                                    </span>
+
+
+                                    {% if submission.grade
+                                        and submission.grade.automatic_score is not none %}
+
+                                        <strong class="score">
+
+                                            {{ "%.1f"|format(
+                                                submission.grade.automatic_score
+                                            ) }}%
+
+                                        </strong>
+
+                                    {% else %}
+
+                                        <span class="not-graded">
+                                            Not graded
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <div class="info-item">
+
+                                    <span class="label">
+                                        Teacher Grade
+                                    </span>
+
+
+                                    {% if submission.grade
+                                        and submission.grade.teacher_score is not none
+                                        and submission.grade.published_at %}
+
+                                        <strong class="score">
+
+                                            {{ "%.1f"|format(
+                                                submission.grade.teacher_score
+                                            ) }}%
+
+                                        </strong>
+
+                                    {% else %}
+
+                                        <span class="not-graded">
+                                            Not published
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ================================================= -->
+                            <!-- ATTEMPT INFORMATION -->
+                            <!-- ================================================= -->
+
+                            <div
+                                class="info-grid"
+                                style="margin-top: 18px;"
+                            >
+
+                                <div class="info-item">
+
+                                    <span class="label">
+                                        Attempt
+                                    </span>
+
+                                    <strong>
+                                        #{{ submission.attempt_number }} / 3
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="info-item">
+
+                                    <span class="label">
+                                        Current Attempt
+                                    </span>
+
+                                    {% if submission.is_current %}
+
+                                        <strong class="score">
+                                            Yes
+                                        </strong>
+
+                                    {% else %}
+
+                                        <span class="muted">
+                                            Historical
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <div class="info-item">
+
+                                    <span class="label">
+                                        Snapshot
+                                    </span>
+
+                                    {% if submission.snapshot_path %}
+
+                                        <strong class="score">
+                                            Frozen
+                                        </strong>
+
+                                    {% else %}
+
+                                        <span class="not-graded">
+                                            No snapshot
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ================================================= -->
+                            <!-- COMMIT SHA -->
+                            <!-- ================================================= -->
+
+                            {% if submission.commit_sha %}
+
+                                <div
+                                    style="margin-top: 18px;"
+                                >
+
+                                    <span class="label">
+                                        Submitted Commit
+                                    </span>
+
+                                    <br>
+
+                                    <code>
+                                        {{ submission.commit_sha }}
+                                    </code>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- ================================================= -->
+                            <!-- FINAL GRADE -->
+                            <!-- ================================================= -->
+
+                            {% if submission.grade
+                                and submission.grade.published_at
+                                and submission.grade.automatic_score is not none
+                                and submission.grade.teacher_score is not none %}
+
+                                <div
+                                    class="grade-box"
+                                    style="margin-top: 18px;"
+                                >
+
+                                    <div>
+
+                                        <span class="label">
+                                            Final Grade
+                                        </span>
+
+                                        <p class="muted">
+                                            70% automatic + 30% teacher
+                                        </p>
+
+                                    </div>
+
+                                    <span class="grade-value">
+
+                                        {{
+                                            "%.2f"|format(
+                                                (
+                                                    0.7 *
+                                                    submission.grade.automatic_score
+                                                )
+                                                +
+                                                (
+                                                    0.3 *
+                                                    submission.grade.teacher_score
+                                                )
+                                            )
+                                        }}/100
+
+                                    </span>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- ================================================= -->
+                            <!-- REPOSITORY -->
+                            <!-- ================================================= -->
+
+                            <div
+                                style="margin-top: 18px;"
+                            >
+
+                                <span class="label">
+                                    Student Repository
+                                </span>
+
+                                <br>
+
+                                <a
+                                    class="repo-link"
+                                    href="{{ submission.repo_url }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    {{ submission.repo_url }}
+                                </a>
+
+                            </div>
+
+
+                            <!-- ================================================= -->
+                            <!-- ACTIONS -->
+                            <!-- ================================================= -->
+
+                            <div class="submission-actions">
+
+                                <a
+                                    class="button button-secondary"
+                                    href="{{ url_for(
+                                        'submission_page',
+                                        submission_id=submission.id
+                                    ) }}"
+                                >
+                                    View Submission
+                                </a>
+
+
+                                <a
+                                    class="button button-primary"
+                                    href="{{ url_for(
+                                        'teacher_submission_page',
+                                        submission_id=submission.id
+                                    ) }}"
+                                >
+                                    Teacher Grading
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+            {% else %}
+
+                <div class="empty-section">
+
+                    <p class="empty-message">
+                        No submissions yet.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </main>
+
+
+    <!-- ================================================= -->
+    <!-- STUDENT VIEW -->
+    <!-- ================================================= -->
+
+    {% else %}
+
+        <main>
+
+
+            <!-- ================================================= -->
+            <!-- STUDENT FLASH MESSAGES -->
+            <!-- ================================================= -->
+
+            {% with messages = get_flashed_messages(
+                with_categories=true
+            ) %}
+
+                {% if messages %}
+
+                    {% for category, message in messages %}
+
+                        <div
+                            class="
+                                alert
+                                {% if category == 'success' %}
+                                    alert-success
+                                {% elif category == 'warning' %}
+                                    alert-warning
+                                {% elif category == 'danger' %}
+                                    alert-warning
+                                {% else %}
+                                    alert-info
+                                {% endif %}
+                            "
+                            style="margin-bottom: 18px;"
+                        >
+
+                            <strong>
+                                {{ message }}
+                            </strong>
+
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <!-- ================================================= -->
+            <!-- LAB NOT LAUNCHED -->
+            <!-- ================================================= -->
+
+            {% if not lab.launched %}
+
+                <section class="card">
+
+                    <div class="alert alert-warning">
+
+                        <strong>
+                            Lab Not Launched Yet
+                        </strong>
+
+                        <p>
+                            This laboratory has not been launched by
+                            the teacher yet. Please come back later.
+                        </p>
+
+                    </div>
+
+                </section>
+
+
+            {% else %}
+
+
+                <!-- ================================================= -->
+                <!-- LAB ASSIGNMENT -->
+                <!-- ================================================= -->
+
+                <section class="submit-section">
+
+                    <h2>
+                        Lab Assignment
+                    </h2>
+
+                    <p>
+                        This laboratory is now available.
+                    </p>
+
+
+                    {% if lab.github_url %}
+
+                        <div style="margin-top: 18px;">
+
+                            <a
+                                class="button button-primary"
+                                href="{{ lab.github_url }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Open Lab on GitHub ↗
+                            </a>
+
+                        </div>
+
+                    {% endif %}
+
+                </section>
+
+
+                <!-- ================================================= -->
+                <!-- SUBMISSION WINDOW STATUS -->
+                <!-- ================================================= -->
+
+                {% if lab.submission_open
+                    and (
+                        lab.submission_deadline is none
+                        or now < lab.submission_deadline
+                    )
+                %}
+
+                    <div class="alert alert-success">
+
+                        <strong>
+                            ✓ Submissions are OPEN
+                        </strong>
+
+                        {% if lab.submission_deadline %}
+
+                            <p>
+                                Deadline:
+                                <strong>
+                                    {{ lab.submission_deadline }}
+                                </strong>
+                            </p>
+
+                        {% else %}
+
+                            <p>
+                                No submission deadline has been set.
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="alert alert-warning">
+
+                        <strong>
+                            Submissions are CLOSED
+                        </strong>
+
+                        {% if lab.submission_deadline
+                            and now >= lab.submission_deadline %}
+
+                            <p>
+                                The submission deadline has passed.
+                            </p>
+
+                        {% else %}
+
+                            <p>
+                                The teacher has closed submissions
+                                for this laboratory.
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- ================================================= -->
+                <!-- FIND CURRENT SUBMISSION -->
+                <!-- ================================================= -->
+
+                {% set current_submission = namespace(item=None) %}
+
+                {% for submission in submissions %}
+
+                    {% if submission.is_current %}
+
+                        {% set current_submission.item = submission %}
+
+                    {% endif %}
+
+                {% endfor %}
+
+
+                <!-- ================================================= -->
+                <!-- STUDENT SUBMISSION STATE -->
+                <!-- ================================================= -->
+
+                {% if current_submission.item is none %}
+
+
+                    <!-- ================================================= -->
+                    <!-- FIRST SUBMISSION -->
+                    <!-- ================================================= -->
+
+                    {% if lab.submission_open
+                        and (
+                            lab.submission_deadline is none
+                            or now < lab.submission_deadline
+                        )
+                    %}
+
+                        <div class="alert alert-info">
+
+                            <strong>
+                                ⚠ Action Required — Lab Not Submitted
+                            </strong>
+
+                            <p>
+                                You have not submitted this lab yet.
+                                Submit your GitHub repository before
+                                the deadline.
+                            </p>
+
+                        </div>
+
+
+                        <section class="submit-section">
+
+                            <h2>
+                                Submit Your Lab
+                            </h2>
+
+                            <p>
+                                Submit the GitHub repository containing
+                                your completed work.
+                            </p>
+
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'submit_lab',
+                                    lab_id=lab.id
+                                ) }}"
+                                class="submission-form"
+                            >
+
+                                <div class="form-group">
+
+                                    <label for="repo_url">
+                                        Your GitHub repository URL
+                                    </label>
+
+                                    <input
+                                        type="url"
+                                        id="repo_url"
+                                        name="repo_url"
+                                        placeholder="https://github.com/username/repository"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <button
+                                    type="submit"
+                                    class="button button-primary"
+                                >
+                                    Submit Lab
+                                </button>
+
+                            </form>
+
+                        </section>
+
+                    {% else %}
+
+                        <div class="alert alert-warning">
+
+                            <strong>
+                                Submissions are CLOSED
+                            </strong>
+
+                            <p>
+                                You cannot submit this lab at the moment.
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+
+                {% else %}
+
+
+                    <!-- ================================================= -->
+                    <!-- EXISTING CURRENT SUBMISSION -->
+                    <!-- ================================================= -->
+
+                    {% if current_submission.item.attempt_number >= 3 %}
+
+                        <div
+                            class="alert alert-warning"
+                            style="margin-top: 18px;"
+                        >
+
+                            <strong>
+                                Maximum Attempts Reached
+                            </strong>
+
+                            <p>
+                                You have reached the maximum of 3 attempts
+                                for this lab. No additional resubmissions
+                                are allowed.
+                            </p>
+
+                        </div>
+
+
+                    {% elif current_submission.item.resubmission_blocked %}
+
+                        <div
+                            class="alert alert-warning"
+                            style="margin-top: 18px;"
+                        >
+
+                            <strong>
+                                Resubmission Requests Blocked
+                            </strong>
+
+                            <p>
+                                The teacher has blocked resubmission requests
+                                for this laboratory.
+                            </p>
+
+                        </div>
+
+
+                    {% elif current_submission.item.resubmission_rejections >= 3 %}
+
+                        <div
+                            class="alert alert-warning"
+                            style="margin-top: 18px;"
+                        >
+
+                            <strong>
+                                Resubmission Requests Exhausted
+                            </strong>
+
+                            <p>
+                                Your resubmission requests have been rejected
+                                3 times for this attempt.
+                            </p>
+
+                            <p>
+                                No further requests are allowed for this attempt.
+                            </p>
+
+                        </div>
+
+
+                    {% elif current_submission.item.resubmission_allowed %}
+
+                        <div
+                            class="alert alert-success"
+                            style="margin-top: 18px;"
+                        >
+
+                            <strong>
+                                Resubmission Approved
+                            </strong>
+
+                            <p>
+                                The teacher has allowed you to submit
+                                one new attempt.
+                            </p>
+
+                        </div>
+
+
+                        <section class="submit-section">
+
+                            <h2>
+                                Submit a New Attempt
+                            </h2>
+
+                            <p>
+                                Your previous submission remains preserved.
+                                This will create a new frozen submission snapshot.
+                            </p>
+
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'submit_lab',
+                                    lab_id=lab.id
+                                ) }}"
+                                class="submission-form"
+                            >
+
+                                <div class="form-group">
+
+                                    <label for="repo_url">
+                                        Your GitHub repository URL
+                                    </label>
+
+                                    <input
+                                        type="url"
+                                        id="repo_url"
+                                        name="repo_url"
+                                        placeholder="https://github.com/username/repository"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <button
+                                    type="submit"
+                                    class="button button-primary"
+                                >
+                                    Submit New Attempt
+                                </button>
+
+                            </form>
+
+                        </section>
+
+
+                    {% elif current_submission.item.resubmission_requested %}
+
+                        <div
+                            class="alert alert-info"
+                            style="margin-top: 18px;"
+                        >
+
+                            <strong>
+                                Resubmission Request Pending
+                            </strong>
+
+                            <p>
+                                You have requested another attempt.
+                                Please wait for the teacher to approve
+                                or reject it.
+                            </p>
+
+                        </div>
+
+
+                    {% elif current_submission.item.resubmission_message %}
+
+                        <div
+                            class="alert alert-info"
+                            style="margin-top: 18px;"
+                        >
+
+                            <strong>
+                                Resubmission Update
+                            </strong>
+
+                            <p>
+                                {{ current_submission.item.resubmission_message }}
+                            </p>
+
+                        </div>
+
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'request_resubmission',
+                                submission_id=current_submission.item.id
+                            ) }}"
+                            style="margin-top: 15px;"
+                        >
+
+                            <button
+                                type="submit"
+                                class="button button-secondary"
+                            >
+                                Request Resubmission
+                            </button>
+
+                        </form>
+
+
+                    {% else %}
+
+                        <div
+                            class="alert alert-info"
+                            style="margin-top: 18px;"
+                        >
+
+                            <strong>
+                                Submission Already Received
+                            </strong>
+
+                            <p>
+                                Your current submission has already been received.
+                                You can request permission from the teacher
+                                to submit again.
+                            </p>
+
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'request_resubmission',
+                                    submission_id=current_submission.item.id
+                                ) }}"
+                                style="margin-top: 15px;"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="button button-secondary"
+                                >
+                                    Request Resubmission
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    {% endif %}
+
+                {% endif %}
+
+
+                <hr>
+
+
+                <!-- ================================================= -->
+                <!-- SUBMISSION ATTEMPTS -->
+                <!-- ================================================= -->
+
+                <section>
+
+                    <div class="page-header">
+
+                        <div>
+
+                            <h2>
+                                Submission Attempts
+                            </h2>
+
+                            <p class="subtitle">
+                                View your previous submissions
+                                and published results.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    {% if submissions %}
+
+                        <div class="submissions-list">
+
+                            {% for submission in submissions %}
+
+                                <div class="submission-card">
+
+
+                                    <!-- ================================================= -->
+                                    <!-- ATTEMPT HEADER -->
+                                    <!-- ================================================= -->
+
+                                    <div class="notebook-header">
+
+                                        <div>
+
+                                            <h3>
+                                                Attempt #{{ submission.attempt_number }} / 3
+                                            </h3>
+
+
+                                            {% if submission.is_current %}
+
+                                                <span class="status">
+                                                    Current
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="status">
+                                                    Historical
+                                                </span>
+
+                                            {% endif %}
+
+                                        </div>
+
+
+                                        <span class="status">
+                                            {{ submission.status }}
+                                        </span>
+
+                                    </div>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- REPOSITORY -->
+                                    <!-- ================================================= -->
+
+                                    <div
+                                        style="margin-top: 18px;"
+                                    >
+
+                                        <span class="label">
+                                            Submitted Repository
+                                        </span>
+
+                                        <br>
+
+                                        <a
+                                            class="repo-link"
+                                            href="{{ submission.repo_url }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            {{ submission.repo_url }}
+                                        </a>
+
+                                    </div>
+
+
+                                    <!-- ================================================= -->
+                                    <!-- COMMIT -->
+                                    <!-- ================================================= -->
+
+                                    {% if submission.commit_sha %}
+
+                                        <div
+                                            style="margin-top: 18px;"
+                                        >
+
+                                            <span class="label">
+                                                Submitted Commit
+                                            </span>
+
+                                            <br>
+
+                                            <code>
+                                                {{ submission.commit_sha }}
+                                            </code>
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    <!-- ================================================= -->
+                                    <!-- SNAPSHOT -->
+                                    <!-- ================================================= -->
+
+                                    {% if submission.snapshot_path %}
+
+                                        <div
+                                            style="margin-top: 18px;"
+                                        >
+
+                                            <span class="label">
+                                                Submission Snapshot
+                                            </span>
+
+                                            <br>
+
+                                            <span class="score">
+                                                Frozen
+                                            </span>
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    <!-- ================================================= -->
+                                    <!-- CURRENT RESUBMISSION MESSAGE -->
+                                    <!-- ================================================= -->
+
+                                    {% if submission.is_current
+                                        and submission.resubmission_message
+                                        and submission.attempt_number < 3
+                                        and not submission.resubmission_blocked
+                                        and submission.resubmission_rejections < 3 %}
+
+                                        <div
+                                            class="alert alert-info"
+                                            style="margin-top: 18px;"
+                                        >
+
+                                            <strong>
+                                                Resubmission Update
+                                            </strong>
+
+                                            <p>
+                                                {{ submission.resubmission_message }}
+                                            </p>
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    <!-- ================================================= -->
+                                    <!-- PUBLISHED RESULT -->
+                                    <!-- ================================================= -->
+
+                                    {% if submission.status == "published"
+                                        and submission.grade
+                                        and submission.grade.published_at %}
+
+                                        <div
+                                            class="info-grid"
+                                            style="margin-top: 18px;"
+                                        >
+
+                                            {% if submission.grade.automatic_score is not none %}
+
+                                                <div class="info-item">
+
+                                                    <span class="label">
+                                                        Automatic Grade
+                                                    </span>
+
+                                                    <strong class="score">
+
+                                                        {{ "%.1f"|format(
+                                                            submission.grade.automatic_score
+                                                        ) }}%
+
+                                                    </strong>
+
+                                                </div>
+
+                                            {% endif %}
+
+
+                                            {% if submission.grade.teacher_score is not none %}
+
+                                                <div class="info-item">
+
+                                                    <span class="label">
+                                                        Teacher Grade
+                                                    </span>
+
+                                                    <strong class="score">
+
+                                                        {{ "%.1f"|format(
+                                                            submission.grade.teacher_score
+                                                        ) }}%
+
+                                                    </strong>
+
+                                                </div>
+
+                                            {% endif %}
+
+                                        </div>
+
+
+                                        {% if submission.grade.automatic_score is not none
+                                            and submission.grade.teacher_score is not none %}
+
+                                            <div
+                                                class="grade-box"
+                                                style="margin-top: 18px;"
+                                            >
+
+                                                <div>
+
+                                                    <span class="label">
+                                                        Final Grade
+                                                    </span>
+
+                                                    <p class="muted">
+                                                        70% automatic + 30% teacher
+                                                    </p>
+
+                                                </div>
+
+
+                                                <span class="grade-value">
+
+                                                    {{
+                                                        "%.2f"|format(
+                                                            (
+                                                                0.7 *
+                                                                submission.grade.automatic_score
+                                                            )
+                                                            +
+                                                            (
+                                                                0.3 *
+                                                                submission.grade.teacher_score
+                                                            )
+                                                        )
+                                                    }}/100
+
+                                                </span>
+
+                                            </div>
+
+                                        {% endif %}
+
+
+                                        {% if submission.grade.feedback %}
+
+                                            <div
+                                                class="alert alert-info"
+                                                style="margin-top: 18px;"
+                                            >
+
+                                                <strong>
+                                                    Teacher Feedback
+                                                </strong>
+
+                                                <p>
+                                                    {{ submission.grade.feedback }}
+                                                </p>
+
+                                            </div>
+
+                                        {% endif %}
+
+
+                                    {% else %}
+
+                                        <div
+                                            class="alert alert-info"
+                                            style="margin-top: 18px;"
+                                        >
+
+                                            <strong>
+                                                Result not published yet.
+                                            </strong>
+
+                                            <p>
+                                                Your final grade and teacher
+                                                feedback will appear here
+                                                after publication.
+                                            </p>
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    <!-- ================================================= -->
+                                    <!-- VIEW SUBMISSION -->
+                                    <!-- ================================================= -->
+
+                                    <div class="submission-actions">
+
+                                        <a
+                                            class="button button-secondary"
+                                            href="{{ url_for(
+                                                'submission_page',
+                                                submission_id=submission.id
+                                            ) }}"
+                                        >
+                                            View Submission
+                                        </a>
+
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+
+                    {% else %}
+
+                        <div class="empty-section">
+
+                            <p class="empty-message">
+                                You have not submitted this lab yet.
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+                </section>
+
+            {% endif %}
+
+        </main>
+
+    {% endif %}
+
+
+    <!-- ================================================= -->
+    <!-- NAVIGATION -->
+    <!-- ================================================= -->
+
+    <footer class="navigation">
+
+        <a
+            class="button button-secondary"
+            href="{{ url_for('home') }}"
+        >
+            ← Back to Labs
+        </a>
+
+
+        <a
+            class="button button-secondary"
+            href="{{ url_for('logout') }}"
+        >
+            Logout
+        </a>
+
+    </footer>
+
+</div>
+
+</body>
+
+</html>

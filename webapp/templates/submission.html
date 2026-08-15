@@ -1,0 +1,493 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    Submission — {{ submission.lab.name }}
+{% endblock %}
+
+
+{% block content %}
+
+    <!-- ================================================= -->
+    <!-- SUBMISSION HEADER -->
+    <!-- ================================================= -->
+
+    <header class="header">
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    {{ submission.student.github_username }}
+                </h1>
+
+                <p class="lab-description">
+                    {{ submission.lab.name }}
+                </p>
+
+            </div>
+
+
+            <span class="status">
+                {{ submission.status }}
+            </span>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================================================= -->
+    <!-- REPOSITORY -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <h2>
+            Repository
+        </h2>
+
+        <a
+            class="repo-link"
+            href="{{ submission.repo_url }}"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            {{ submission.repo_url }}
+        </a>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- GRADE -->
+    <!-- ================================================= -->
+
+    {% if submission.grade %}
+
+        <section>
+
+            <h2>
+                Grade
+            </h2>
+
+
+            <!-- ================================================= -->
+            <!-- AUTOMATIC GRADE -->
+            <!-- ================================================= -->
+
+            <div class="grade-box">
+
+                <div>
+
+                    <span class="label">
+                        Automatic Score
+                    </span>
+
+                    {% if submission.grade.automatic_score is not none %}
+
+                        <div class="grade-value">
+
+                            {{ "%.1f"|format(
+                                submission.grade.automatic_score
+                            ) }}%
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="not-graded">
+                            Not graded
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                {% if submission.grade.published_at %}
+
+                    <div>
+
+                        <span class="label">
+                            Teacher Score
+                        </span>
+
+                        {% if submission.grade.teacher_score is not none %}
+
+                            <div class="grade-value">
+
+                                {{ "%.1f"|format(
+                                    submission.grade.teacher_score
+                                ) }}%
+
+                            </div>
+
+                        {% else %}
+
+                            <div class="not-graded">
+                                Not assigned
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- FINAL GRADE -->
+            <!-- ================================================= -->
+
+            {% if submission.grade.published_at
+                and submission.grade.automatic_score is not none
+                and submission.grade.teacher_score is not none %}
+
+                <div
+                    class="grade-box"
+                    style="margin-top: 18px;"
+                >
+
+                    <div>
+
+                        <span class="label">
+                            Final Grade
+                        </span>
+
+                        <p class="muted">
+                            70% automatic + 30% teacher
+                        </p>
+
+                    </div>
+
+                    <div class="grade-value">
+
+                        {{
+                            "%.2f"|format(
+                                (
+                                    0.7 *
+                                    submission.grade.automatic_score
+                                )
+                                +
+                                (
+                                    0.3 *
+                                    submission.grade.teacher_score
+                                )
+                            )
+                        }}/100
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- ================================================= -->
+            <!-- PUBLICATION STATUS -->
+            <!-- ================================================= -->
+
+            {% if submission.grade.published_at %}
+
+                <div
+                    class="status-published"
+                    style="margin-top: 18px;"
+                >
+
+                    <span class="status-dot"></span>
+
+                    <div>
+
+                        <strong>
+                            Grade Published
+                        </strong>
+
+                        <p>
+                            Published:
+                            {{ submission.grade.published_at }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- TEACHER FEEDBACK -->
+                <!-- ================================================= -->
+
+                {% if submission.grade.feedback %}
+
+                    <div
+                        class="alert alert-info"
+                        style="margin-top: 18px;"
+                    >
+
+                        <strong>
+                            Teacher Feedback
+                        </strong>
+
+                        <p>
+                            {{ submission.grade.feedback }}
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+
+            {% else %}
+
+                <div
+                    class="status-not-published"
+                    style="margin-top: 18px;"
+                >
+
+                    <span class="status-dot"></span>
+
+                    <div>
+
+                        <strong>
+                            Final grade not published yet
+                        </strong>
+
+                        <p>
+                            Teacher feedback will appear
+                            once the grade has been published.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- NOTEBOOK RESULTS -->
+        <!-- ================================================= -->
+
+        <section>
+
+            <h2>
+                Notebook Results
+            </h2>
+
+
+            {% if submission.grade.notebooks %}
+
+                <div class="submissions-list">
+
+
+                    {% for notebook in submission.grade.notebooks %}
+
+                        <div class="notebook-card">
+
+
+                            <!-- ================================================= -->
+                            <!-- NOTEBOOK HEADER -->
+                            <!-- ================================================= -->
+
+                            <div class="notebook-header">
+
+                                <div>
+
+                                    <h3>
+                                        {{ notebook.notebook_name }}
+                                    </h3>
+
+                                    <span class="muted">
+                                        Automatic evaluation
+                                    </span>
+
+                                </div>
+
+
+                                {% if notebook.score is not none %}
+
+                                    <span class="score-badge">
+
+                                        {{ "%.1f"|format(
+                                            notebook.score * 100
+                                        ) }}%
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="not-graded">
+                                        Not graded
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- ================================================= -->
+                            <!-- NOTEBOOK ERROR -->
+                            <!-- ================================================= -->
+
+                            {% if notebook.error %}
+
+                                <div
+                                    class="alert alert-warning"
+                                    style="margin-top: 18px;"
+                                >
+
+                                    <strong>
+                                        Evaluation Error
+                                    </strong>
+
+                                    <p>
+                                        {{ notebook.error }}
+                                    </p>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- ================================================= -->
+                            <!-- CHECKS -->
+                            <!-- ================================================= -->
+
+                            {% if notebook.checks %}
+
+                                <ul class="check-list">
+
+                                    {% for check in notebook.checks %}
+
+                                        <li
+                                            class="
+                                                check-item
+                                                {% if check.passed %}
+                                                    check-passed
+                                                {% else %}
+                                                    check-failed
+                                                {% endif %}
+                                            "
+                                        >
+
+                                            <span class="check-icon">
+
+                                                {% if check.passed %}
+                                                    ✓
+                                                {% else %}
+                                                    ✕
+                                                {% endif %}
+
+                                            </span>
+
+
+                                            <div>
+
+                                                <strong>
+                                                    {{ check.check_name }}
+                                                </strong>
+
+
+                                                {% if check.message %}
+
+                                                    <p>
+                                                        {{ check.message }}
+                                                    </p>
+
+                                                {% endif %}
+
+                                            </div>
+
+                                        </li>
+
+                                    {% endfor %}
+
+                                </ul>
+
+
+                            {% else %}
+
+                                <p class="empty-message">
+                                    No checks available.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+            {% else %}
+
+                <div class="empty-section">
+
+                    <p class="empty-message">
+                        No notebook results available.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+
+    {% else %}
+
+
+        <!-- ================================================= -->
+        <!-- NOT GRADED -->
+        <!-- ================================================= -->
+
+        <section class="empty-section">
+
+            <h2>
+                Grade
+            </h2>
+
+            <p>
+                This submission has not been graded yet.
+            </p>
+
+        </section>
+
+    {% endif %}
+
+
+    <!-- ================================================= -->
+    <!-- PAGE NAVIGATION -->
+    <!-- ================================================= -->
+
+    <div class="navigation">
+
+
+        <a
+            class="button button-secondary"
+            href="{{ url_for(
+                'lab_page',
+                lab_id=submission.lab.id
+            ) }}"
+        >
+            ← Back to {{ submission.lab.name }}
+        </a>
+
+
+        <a
+            class="button button-secondary"
+            href="{{ url_for('home') }}"
+        >
+            Home
+        </a>
+
+    </div>
+
+{% endblock %}
+
